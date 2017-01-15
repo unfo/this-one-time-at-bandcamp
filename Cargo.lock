@@ -2,8 +2,14 @@
 name = "this-one-time-at-bandcamp"
 version = "0.1.0"
 dependencies = [
+ "base32 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "ring 0.6.2 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
+
+[[package]]
+name = "base32"
+version = "0.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "lazy_static"
@@ -25,6 +31,7 @@ version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [metadata]
+"checksum base32 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)" = "1b9605ba46d61df0410d8ac686b0007add8172eba90e8e909c347856fe794d8c"
 "checksum lazy_static 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)" = "6abe0ee2e758cd6bc8a2cd56726359007748fbf4128da998b65d0b70f881e19b"
 "checksum ring 0.6.2 (registry+https://github.com/rust-lang/crates.io-index)" = "87ac4fce2ee4bb10dd106788e90fdfa4c5a7f3f9f6aae29824db77dc57e2767d"
 "checksum untrusted 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)" = "193df64312e3515fd983ded55ad5bcaa7647a035804828ed757e832ce6029ef3"
