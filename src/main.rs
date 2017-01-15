@@ -59,7 +59,9 @@ fn truncate(bytes: &[u8]) -> &[u8] {
     trunc_bytes
 }
 
+fn totp_value(secret: &str) -> String {
     let key_decoded = decode(Alphabet::RFC4648{ padding: false }, secret).unwrap();
+    let otp = hotp(key_decoded, time_counter()) % 1000000;
     let otp_str = otp.to_string();
     match otp_str.len() {
         1 => format!("00000{}", otp),
@@ -67,4 +69,7 @@ fn truncate(bytes: &[u8]) -> &[u8] {
         3 => format!("000{}", otp),
         4 => format!("00{}", otp),
         5 => format!("0{}", otp),
+        6 => format!("{}", otp),
+        _ => format!("<INVALID>")
+    }
 }
