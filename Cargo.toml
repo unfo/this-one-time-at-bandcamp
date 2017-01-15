@@ -1,7 +1,7 @@
 [package]
 name = "this-one-time-at-bandcamp"
-version = "0.1.0"
-authors = ["jw"]
+version = "1.0.0"
+authors = ["unfo, codeflows"]
 
 [dependencies]
 ring = "0.6.2"
