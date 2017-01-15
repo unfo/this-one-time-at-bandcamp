@@ -22,13 +22,24 @@ fn time_counter() -> u64 {
     seconds_since_epoch / TS
 }
 
-fn hotp(secret: &str, counter: u64) -> u64 {
+fn hotp(secret: &str, counter: u64) -> u32 {
     let key = hmac::SigningKey::new(&digest::SHA1, &[0,1]);
     let signature = hmac::sign(&key, "hello world".as_bytes());
     let sign_bytes = signature.as_ref();
     let trunc_bytes = truncate(sign_bytes);
     println!("trunc bytes -> {:?}", &trunc_bytes);
-    7
+    let a: u32 = trunc_bytes[0] as u32;
+    let b: u32 = trunc_bytes[1] as u32;
+    let c: u32 = trunc_bytes[2] as u32;
+    let d: u32 = trunc_bytes[3] as u32;
+    let shifted =
+        a.rotate_left(24) |
+        b.rotate_left(16) |
+        c.rotate_left(8) |
+        d;
+    let result = shifted & 0x7FFFFFFF;
+    println!("first byte -> {} {}", shifted, result);
+    result
 }
 
 fn truncate(bytes: &[u8]) -> &[u8] {
@@ -39,6 +50,6 @@ fn truncate(bytes: &[u8]) -> &[u8] {
     trunc_bytes
 }
 
-fn totp_value() -> u64 {
+fn totp_value() -> u32 {
     hotp("secret", time_counter()) % 1000000
 }
