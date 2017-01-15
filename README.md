@@ -4,6 +4,8 @@ Time-based one-time password implementation in Rust.
 
 Written as a programming exercise, DO NOT USE FOR REALZ.
 
+Reference: https://en.wikipedia.org/wiki/Time-based_One-time_Password_Algorithm
+
 ## Usage
 
 ```bash
