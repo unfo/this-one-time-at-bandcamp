@@ -8,16 +8,11 @@ use std::env;
 
 const TS: u64 = 30;
 
-// Google implementation of the authenticator app does not support T0, TI values, hash methods and token lengths different from the default.
-// It also expects the K secret key to be entered (or supplied in a QR code) in base-32 encoding according to RFC 3548
 fn main() {
     let secret = env::args().nth(1).unwrap();
-    println!("Hello OTP -> {}", totp_value(&secret));
+    println!("One-time password is {}", totp_value(&secret));
 }
 
-// TC = floor((unixtime(now) − unixtime(T0)) / TS),
-// TOTP = HOTP(SecretKey, TC),
-// TOTP-Value = TOTP mod 10d, where d is the desired number of digits of the one-time password.
 fn time_counter() -> u64 {
     let now = SystemTime::now();
     let seconds_since_epoch = now.duration_since(UNIX_EPOCH).unwrap().as_secs();
@@ -29,11 +24,8 @@ fn hotp(secret: Vec<u8>, counter: u64) -> u32 {
     let signature = hmac::sign(&key, &transform_u64_to_array_of_u8(counter));
     let sign_bytes = signature.as_ref();
     let trunc_bytes = truncate(sign_bytes);
-    println!("trunc bytes -> {:?}", &trunc_bytes);
     let trunc_u32 = transform_u8_array_to_u32(trunc_bytes);
-    let result = trunc_u32 & 0x7FFFFFFF;
-    println!("first byte -> {} {}", trunc_u32, result);
-    result
+    trunc_u32 & 0x7FFFFFFF
 }
 
 fn transform_u8_array_to_u32(x:&[u8]) -> u32 {
@@ -62,15 +54,12 @@ fn transform_u64_to_array_of_u8(x:u64) -> [u8;8] {
 }
 
 fn truncate(bytes: &[u8]) -> &[u8] {
-    println!("Sign bytes -> {:?}", bytes);
     let offset_byte:usize = (bytes[19] & 0b0000_1111) as usize;
-    println!("offset byte -> {:?}", offset_byte);
     let trunc_bytes: &[u8] = &bytes[offset_byte..(offset_byte+4)];
     trunc_bytes
 }
 
 fn totp_value(secret: &str) -> u32 {
     let key_decoded = decode(Alphabet::RFC4648{ padding: false }, secret).unwrap();
-    println!("key decoded {}, {:?}", secret, key_decoded);
     hotp(key_decoded, time_counter()) % 1000000
 }
