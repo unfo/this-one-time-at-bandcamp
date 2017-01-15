@@ -26,18 +26,23 @@ fn hotp(secret: &str, counter: u64) -> u32 {
     let sign_bytes = signature.as_ref();
     let trunc_bytes = truncate(sign_bytes);
     println!("trunc bytes -> {:?}", &trunc_bytes);
-    let a: u32 = trunc_bytes[0] as u32;
-    let b: u32 = trunc_bytes[1] as u32;
-    let c: u32 = trunc_bytes[2] as u32;
-    let d: u32 = trunc_bytes[3] as u32;
+    let trunc_u32 = transform_u8_array_to_u32(trunc_bytes);
+    let result = trunc_u32 & 0x7FFFFFFF;
+    println!("first byte -> {} {}", trunc_u32, result);
+    result
+}
+
+fn transform_u8_array_to_u32(x:&[u8]) -> u32 {
+    let a: u32 = x[0] as u32;
+    let b: u32 = x[1] as u32;
+    let c: u32 = x[2] as u32;
+    let d: u32 = x[3] as u32;
     let shifted =
         a.rotate_left(24) |
         b.rotate_left(16) |
         c.rotate_left(8) |
         d;
-    let result = shifted & 0x7FFFFFFF;
-    println!("first byte -> {} {}", shifted, result);
-    result
+    shifted
 }
 
 fn transform_u64_to_array_of_u8(x:u64) -> [u8;8] {
