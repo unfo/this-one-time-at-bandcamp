@@ -34,9 +34,9 @@ fn transform_u8_array_to_u32(x:&[u8]) -> u32 {
     let c: u32 = x[2] as u32;
     let d: u32 = x[3] as u32;
     let shifted =
-        a.rotate_left(24) |
-        b.rotate_left(16) |
-        c.rotate_left(8) |
+        a << 24 |
+        b << 16 |
+        c << 8 |
         d;
     shifted
 }
