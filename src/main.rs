@@ -1,6 +1,11 @@
-use std::time::{SystemTime, UNIX_EPOCH};
+extern crate ring;
 
-const TS:u64 = 30;
+use std::time::{SystemTime, UNIX_EPOCH};
+use ring::{digest, hmac};
+
+
+
+const TS: u64 = 30;
 
 // Google implementation of the authenticator app does not support T0, TI values, hash methods and token lengths different from the default.
 // It also expects the K secret key to be entered (or supplied in a QR code) in base-32 encoding according to RFC 3548
@@ -18,7 +23,20 @@ fn time_counter() -> u64 {
 }
 
 fn hotp(secret: &str, counter: u64) -> u64 {
-    counter
+    let key = hmac::SigningKey::new(&digest::SHA1, &[0,1]);
+    let signature = hmac::sign(&key, "hello world".as_bytes());
+    let sign_bytes = signature.as_ref();
+    let trunc_bytes = truncate(sign_bytes);
+    println!("trunc bytes -> {:?}", &trunc_bytes);
+    7
+}
+
+fn truncate(bytes: &[u8]) -> &[u8] {
+    println!("Sign bytes -> {:?}", bytes);
+    let offset_byte:usize = (bytes[19] & 0b0000_1111) as usize;
+    println!("offset byte -> {:?}", offset_byte);
+    let trunc_bytes: &[u8] = &bytes[offset_byte..(offset_byte+4)];
+    trunc_bytes
 }
 
 fn totp_value() -> u64 {
