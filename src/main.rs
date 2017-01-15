@@ -3,8 +3,6 @@ extern crate ring;
 use std::time::{SystemTime, UNIX_EPOCH};
 use ring::{digest, hmac};
 
-
-
 const TS: u64 = 30;
 
 // Google implementation of the authenticator app does not support T0, TI values, hash methods and token lengths different from the default.
@@ -24,7 +22,7 @@ fn time_counter() -> u64 {
 
 fn hotp(secret: &str, counter: u64) -> u32 {
     let key = hmac::SigningKey::new(&digest::SHA1, &[0,1]);
-    let signature = hmac::sign(&key, "hello world".as_bytes());
+    let signature = hmac::sign(&key, &transform_u64_to_array_of_u8(counter));
     let sign_bytes = signature.as_ref();
     let trunc_bytes = truncate(sign_bytes);
     println!("trunc bytes -> {:?}", &trunc_bytes);
@@ -40,6 +38,18 @@ fn hotp(secret: &str, counter: u64) -> u32 {
     let result = shifted & 0x7FFFFFFF;
     println!("first byte -> {} {}", shifted, result);
     result
+}
+
+fn transform_u64_to_array_of_u8(x:u64) -> [u8;8] {
+    let b1 : u8 = ((x >> 56) & 0xff) as u8;
+    let b2 : u8 = ((x >> 48) & 0xff) as u8;
+    let b3 : u8 = ((x >> 40) & 0xff) as u8;
+    let b4 : u8 = ((x >> 32) & 0xff) as u8;
+    let b5 : u8 = ((x >> 24) & 0xff) as u8;
+    let b6 : u8 = ((x >> 16) & 0xff) as u8;
+    let b7 : u8 = ((x >> 8) & 0xff) as u8;
+    let b8 : u8 = (x & 0xff) as u8;
+    return [b1, b2, b3, b4, b5, b6, b7, b8]
 }
 
 fn truncate(bytes: &[u8]) -> &[u8] {
